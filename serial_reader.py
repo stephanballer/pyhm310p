@@ -47,12 +47,12 @@ def serial_plot(device_path, delay=0.5, file_path=None):
         power_list.append(ret['Power'])
 
         ax.clear()
-        plt.xlabel('t')
-        plt.ylabel('W')
         ax.relim()
         ax.autoscale()
         ax.plot(time_list, power_list)
         ax.set_ylim(bottom=0)
+        ax.set_xlabel('t')
+        ax.set_ylabel('W')
 
     fig, ax = plt.subplots()
     ani = animation.FuncAnimation(fig, anim, interval=(delay*1000))
