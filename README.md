@@ -12,6 +12,8 @@ Files:
 
 Examples:
 ```
+#!/usr/bin/python
+
 from hm310p import HMReader
 from time import sleep
 
@@ -22,5 +24,6 @@ while True:
 ```
 
 ```
+#!/bin/sh
 ./serial_reader.py monitor /dev/ttyUSB0 -l -f data.txt
 ```
