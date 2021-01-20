@@ -10,7 +10,7 @@ Files:
  - hm310p.py: Actual library
  - serial_reader.py: Simple command line interface for monitoring with the option to save data to file and plot afterwards
 
-Example:
+Examples:
 ```
 from hm310p import HMReader
 from time import sleep
