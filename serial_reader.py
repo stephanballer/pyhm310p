@@ -97,8 +97,6 @@ def plot(file_paths):
                             current = float(line_args[1])
                             voltage = float(line_args[2])
                             power = float(line_args[3])
-#                            if current < 0 or voltage < 4.5 or voltage > 5.5:
-#                                continue
                             time_list.append(time)
                             current_list.append(current)
                             voltage_list.append(voltage)
@@ -140,7 +138,6 @@ if __name__ == '__main__':
     monitorparser.add_argument('-i', '--interval',  type=float, default=0.5, help='Writing interval of average current that is measured')
     monitorparser.add_argument('-f', '--file', help='Write data to file with given path')
     monitorparser.add_argument('-l', '--live', action='store_true', default=False, help='Plot live graph instead of command line output')
-    #monitorparser.add_argument('-m', '--measured_device', help='Receive serial signals from measured device with given device path')
     plotparser = subparsers.add_parser('plot', help='Create plot from file paths')
     plotparser.add_argument('file_paths', nargs='+', help='path to data files')
     args = parser.parse_args()
