@@ -1,11 +1,9 @@
 #!/usr/bin/python3
 
-from hm310p import HMReader
-from serial import Serial
 from time import time, sleep
 import argparse
 
-def serial_read(device_path, delay=0.5, file_path=None, ):
+def serial_read(device_path, delay=0.5, file_path=None):
     reader = HMReader(device_path)
 
     if file_path is not None:
@@ -28,10 +26,43 @@ def serial_read(device_path, delay=0.5, file_path=None, ):
     reader.close()
 
 
+def serial_plot(device_path, delay=0.5, file_path=None):
+    reader = HMReader(device_path)
+    time_list, power_list = list(), list()
+
+    if file_path is not None:
+        with open(file_path, 'w') as f:
+            f.write('serial_data\n')
+
+    def anim(i):
+        timestamp = time()
+        ret = reader.read()
+
+        if file_path is not None:
+            with open(file_path, 'a') as f:
+                f.write('%f %.8f %.8f %.8f\n' % (timestamp,
+                    ret['Current'], ret['Voltage'], ret['Power']))
+
+        time_list.append(timestamp)
+        power_list.append(ret['Power'])
+
+        ax.clear()
+        plt.xlabel('t')
+        plt.ylabel('W')
+        ax.relim()
+        ax.autoscale()
+        ax.plot(time_list, power_list)
+        ax.set_ylim(bottom=0)
+
+    fig, ax = plt.subplots()
+    ani = animation.FuncAnimation(fig, anim, interval=(delay*1000))
+    plt.show()
+
+    reader.close()
+
+
+
 def plot(file_paths):
-    import matplotlib.pyplot as plt
-    from matplotlib import axes
-    
     serial_data, inf_data = list(), list()
     for path in file_paths:
         with open(path, 'r') as f:
@@ -67,8 +98,6 @@ def plot(file_paths):
                             pass
                 inf_data.append(data_list)
 
-
-
     fig, ax = plt.subplots()
     plt.xlabel('t')
     plt.ylabel('W')
@@ -90,12 +119,27 @@ if __name__ == '__main__':
     monitorparser.add_argument('device_path', type=str, help='Path to serial device from which analog input data is read')
     monitorparser.add_argument('-i', '--interval',  type=float, default=0.5, help='Writing interval of average current that is measured')
     monitorparser.add_argument('-f', '--file', help='Write data to file with given path')
+    monitorparser.add_argument('-l', '--live', action='store_true', default=False, help='Plot live graph instead of command line output')
+    monitorparser.add_argument('-p', '--power', action='store_true', default=False, help='Plot live graph instead of command line output')
     #monitorparser.add_argument('-m', '--measured_device', help='Receive serial signals from measured device with given device path')
     plotparser = subparsers.add_parser('plot', help='Create plot from file paths')
     plotparser.add_argument('file_paths', nargs='+', help='path to data files')
     args = parser.parse_args()
 
     if args.cmd == 'plot':
+        import matplotlib.pyplot as plt
+        from matplotlib import axes
+ 
         plot(args.file_paths)
     elif args.cmd == 'monitor':
-        serial_read(args.device_path, args.interval, args.file)
+        from hm310p import HMReader
+        from serial import Serial
+
+        if args.live:
+            import matplotlib.pyplot as plt
+            from matplotlib import axes
+            import matplotlib.animation as animation
+
+            serial_plot(args.device_path, args.interval, args.file)
+        else:
+            serial_read(args.device_path, args.interval, args.file)
