@@ -28,7 +28,7 @@ def serial_read(device_path, delay=0.5, file_path=None):
 
 def serial_plot(device_path, delay=0.5, file_path=None):
     reader = HMReader(device_path)
-    time_list, power_list = list(), list()
+    time_list, power_list, voltage_list, current_list = list(), list(), list(), list()
 
     if file_path is not None:
         with open(file_path, 'w') as f:
@@ -44,17 +44,37 @@ def serial_plot(device_path, delay=0.5, file_path=None):
                     ret['Current'], ret['Voltage'], ret['Power']))
 
         time_list.append(timestamp)
+
         power_list.append(ret['Power'])
+        ax[0].clear()
+        ax[0].relim()
+        ax[0].autoscale()
+        ax[0].plot(time_list, power_list)
+        ax[0].set_ylim(bottom=0)
+        ax[0].set_xlabel('t')
+        ax[0].set_ylabel('W')
 
-        ax.clear()
-        ax.relim()
-        ax.autoscale()
-        ax.plot(time_list, power_list)
-        ax.set_ylim(bottom=0)
-        ax.set_xlabel('t')
-        ax.set_ylabel('W')
+        voltage_list.append(ret['Voltage'])
+        ax[1].clear()
+        ax[1].relim()
+        ax[1].autoscale()
+        ax[1].plot(time_list, voltage_list)
+        ax[1].set_ylim(bottom=0)
+        ax[1].set_xlabel('t')
+        ax[1].set_ylabel('V')
 
-    fig, ax = plt.subplots()
+        current_list.append(ret['Current'])
+        ax[2].clear()
+        ax[2].relim()
+        ax[2].autoscale()
+        ax[2].plot(time_list, current_list)
+        ax[2].set_ylim(bottom=0)
+        ax[2].set_xlabel('t')
+        ax[2].set_ylabel('A')
+
+
+
+    fig, ax = plt.subplots(3)
     ani = animation.FuncAnimation(fig, anim, interval=(delay*1000))
     plt.show()
 
@@ -120,7 +140,6 @@ if __name__ == '__main__':
     monitorparser.add_argument('-i', '--interval',  type=float, default=0.5, help='Writing interval of average current that is measured')
     monitorparser.add_argument('-f', '--file', help='Write data to file with given path')
     monitorparser.add_argument('-l', '--live', action='store_true', default=False, help='Plot live graph instead of command line output')
-    monitorparser.add_argument('-p', '--power', action='store_true', default=False, help='Plot live graph instead of command line output')
     #monitorparser.add_argument('-m', '--measured_device', help='Receive serial signals from measured device with given device path')
     plotparser = subparsers.add_parser('plot', help='Create plot from file paths')
     plotparser.add_argument('file_paths', nargs='+', help='path to data files')
