@@ -25,5 +25,6 @@ while True:
 
 ```
 #!/bin/sh
+
 ./serial_reader.py monitor /dev/ttyUSB0 -l -f data.txt
 ```
