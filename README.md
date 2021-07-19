@@ -1,6 +1,6 @@
 # pyhm310p
 
-Python library to use with the Hanmatek HP310P
+Python library to use with the Hanmatek HM310P
 
 Dependencies:
  - pymodbus
