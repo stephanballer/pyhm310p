@@ -1,4 +1,4 @@
-# pyhm310p
+# pyhm310p - HM310P Python Library
 
 Python library to use with the Hanmatek HM310P
 
